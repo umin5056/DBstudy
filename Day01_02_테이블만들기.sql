@@ -24,12 +24,40 @@
             (4) NUMBER(2,2) : 1미만의 소수부 두자리 실수(ex 0.15) - 정수부의 0은 유효 자리가 아님
 */
 
+/*
+    제약조건(Constraint)
+    1. 널
+        1) NULL 또는 생략
+        2) NOT NULL
+        
+    2. 중복 데이터 방지    
+        1) UNIQUE
+        
+    3. 값의 제한
+        1) CHECK
+*/
+
 -- 예시 테이블
+DROP TABLE PRODUCT;
+
 CREATE TABLE PRODUCT(
-    CODE         VARCHAR2(2 BYTE), 
-    MODEL        VARCHAR2(10 BYTE),
-    CATEGORY     VARCHAR2(5 BYTE),
-    PRICE        NUMBER,
-    AMOUNT       NUMBER(2),
+    CODE         VARCHAR2(2 BYTE)   NOT NULL UNIQUE, 
+    MODEL        VARCHAR2(10 BYTE)  NULL,
+    CATEGORY     VARCHAR2(5 BYTE)   CHECK(CATEGORY = 'MAIN' OR CATEGORY = 'SUB'), -- == CHECK(CATEGORY IN('MAIN','SUB'))
+    PRICE        NUMBER             CHECK(PRICE >= 0),
+    AMOUNT       NUMBER(2)          CHECK(0 <= AMOUNT AND AMOUNT <=100),          -- == CHECK(AMOUNT BETWEEN 0 AND 100)
     MANUFACTURED DATE
 );
+
+
+
+
+
+
+
+
+
+
+
+
+
