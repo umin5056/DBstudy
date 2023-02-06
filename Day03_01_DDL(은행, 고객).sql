@@ -7,7 +7,6 @@
         1) CREATE : 생성
         2) ALTER  : 수정
         3) DROP   : 삭제
-        
 */
 
 DROP TABLE CUSTOMER_TBL;
