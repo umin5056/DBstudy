@@ -12,11 +12,71 @@
 */
 
 
+-- 1. 내부 조인(두 테이블에 일치하는 정보를 조인한다.)
 
+-- 1) 표준 문법
 select e.emp_no, e.name, d.dept_no, d.dept_name
   from department_tbl d inner join employee_tbl e
     on d.dept_no = e.depart;
 
+-- 2) 오라클 문법
 select e.emp_no, e.name, d.dept_no, d.dept_name
   from department_tbl d, employee_tbl e
- where d.dept_no = e.depart; 
+ where d.dept_no = e.depart;
+ 
+-- 2. 왼쪽 외부 조인(왼쪽에 있는 테이블은 일치하는 정보가 없어도 무조건 조인한다.)
+ 
+-- 1) 표준 문법
+select d.dept_no, d.dept_name, e.emp_no, e.name
+   from department_tbl d left outer join employee_tbl e
+     on d.dept_no = e.depart;
+     
+-- 2) 오라클 문법
+select d.dept_no, d.dept_name, e.emp_no, e.name
+  from department_tbl d, employee_tbl e
+ where d.dept_no = e.depart(+);
+
+-- 외래키 제약 조건의 비활성화(일시중지)
+-- 제약조건명 : FK_DEPT
+alter table employee_tbl
+    disable constraint fk_dept;
+     
+-- 외래키 제약조건이 없는 상태이므로, 제약조건을 위배하는 데이터를 입력할 수 있다.     
+insert into employee_tbl(emp_no, name, depart, position, gender, hire_date, salary)
+values(employee_seq.nextval, '김성실', 5, '대리', 'F', '98/12/01', 3500000);
+commit;
+
+-- 3. 오른쪽 외부 조인(오른쪽에 있는 테이블은 일치하는 정보가 없어도 무조건 조인한다.)
+-- 1) 표준 문법
+select d.dept_no, d.dept_name, e.emp_no, e.name
+  from department_tbl d right outer join employee_tbl e
+    on d.dept_no = e.depart;
+-- 2) 오라클 문법
+select d.dept_no, d.dept_name, e.emp_no, e.name
+  from department_tbl d, employee_tbl e
+ where d.dept_no(+) = e.depart;
+ 
+-- 외래키 제약조건을 위반하는 데이터 삭제하기
+delete from employee_tbl where emp_no = 1005;   -- pk를 이용해 지우기 (인덱스를 이용해서 성능이 좋다.)
+delete from employee_tbl where name = '김성실'; -- 인덱스가 없는 일반칼럼이라 성능이 별로임.
+commit;
+
+-- 외래키 제약조건의 활성화(재시작)
+-- 제약조건명 : FK_DEPT
+alter table employee_tbl
+    enable constraint fk_dept;
+     
+
+     
+     
+     
+     
+     
+     
+     
+ 
+ 
+ 
+ 
+ 
+ 
