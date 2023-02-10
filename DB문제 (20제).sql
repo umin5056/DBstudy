@@ -32,7 +32,10 @@ select
      , first_name || ' ' || last_name
   from 
        employees
- where employee_id between 151 and 200;      
+ where employee_id between 151 and 200
+ order by employee_id;
+ 
+ 
 
 -- 5. EMPLOYEES 테이블에서 JOB_ID가 'IT_PROG', 'ST_MAN'인 사원을 조회하시오.
 select
@@ -99,12 +102,12 @@ select
   from 
        employees
  where 
-       department_id >= 80
- order by salary;  
+       department_id = 80
+ order by salary desc;  
 
 -- 13. EMPLOYEES 테이블에서 전체 사원의 근무 개월 수를 정수로 조회하시오. 1개월 1일을 근무했다면 2개월을 근무한 것으로 처리해서 조회하시오.
 select
-       concat(floor(months_between(sysdate, to_date(hire_date,'yy-mm-dd'))),'개월')
+       concat(ceil(months_between(sysdate, to_date(hire_date,'yy-mm-dd'))),'개월')
      , first_name || ' ' || last_name
   from employees;
 
@@ -125,13 +128,71 @@ select
  order by phone_number;
 
 -- 15. EMPLOYEES 테이블에서 근무 개월 수가 240개월 이상이면 '퇴직금정산대상', 아니면 빈 문자열('')을 조회하시오.
+SELECT employee_id, first_name || ' ' || last_name,
+	   CASE
+	   		WHEN months_between(sysdate, TO_date(hire_date,'yy/mm/dd')) >= 240 THEN '퇴직금정산대상'
+	   		ELSE ' '
+	   END AS 정산여부
+  FROM employees;	   
+	   
 
 -- 16. EMPLOYEES 테이블에서 SALARY 평균이 10000 이상인 부서의 DEPARTMENT_ID와 SALARY 평균을 조회하시오. 평균은 정수로 내림처리하시오.
+select department_id, floor(avg(salary))
+  from employees
+ group by department_id
+ having avg(salary) >= 10000
+ order by department_id;
 
 -- 17. EMPLOYEES 테이블에서 DEPARTMENT_ID와 JOB_ID가 모두 같은 사원들을 그룹화하여 각 그룹의 사원수를 조회하시오. DEPARTMENT_ID가 NULL인 사원은 제외하시오.
+select department_id, job_id, count(*)
+  from employees
+ where department_id is not null 
+ group by department_id, job_id
+ order by count(*); 
 
--- 18. EMPLOYEES 테이블에서 전체 사원들의 부서내 연봉 순위를 조회하시오. 
+-- 18. EMPLOYEES 테이블에서 전체 사원들의 부서내 연봉 순위를 조회하시오.
+select employee_id, first_name || ' ' || last_name, salary, rank() over(partition by department_id order by salary desc) rank3
+  from employees
+ order by salary desc;
 
 -- 19. DEPARTMENTS 테이블에서 LOCATION_ID로 그룹화하여 각 그룹의 사원수를 조회하시오. MANAGER_ID가 없는 지역은 제외하시오.
+select location_id, count(*) || '명' 사원수
+  from departments
+ where manager_id is not null 
+ group by location_id; 
 
--- 20. DEPARTMENTS 테이블에서 DEPARTMENT_NAME의 첫 2글자로 그룹화하여 각 그룹의 사원수를 조회하시오. 'IT'와 'Co'인 부서만 조회하시오.
+-- 20. DEPARTMENTS 테이블에서 DEPARTMENT_NAME의 첫 2글자로 그룹화하여 각 그룹의 부서수를 조회하시오. 'IT'와 'Co'인 부서만 조회하시오.
+select substr(department_name,1,2), count(*)
+  from departments
+ where substr(department_name,1,2) in ('IT', 'Co')
+ group by substr(department_name,1,2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

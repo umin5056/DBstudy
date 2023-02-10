@@ -70,20 +70,74 @@ select
  order by
        me.employee_id;  
 
+-- 조인 연습.
+
+-- 1. location_id가 1700인 부서에 근무하는 사원들의 employee_id, first_name, department_name을 조회하시오.
+-- 1) 표준 문법
+select e.employee_id, e.first_name, d.department_name, d.location_id
+  from departments d inner join employees e
+    on d.department_id = e.department_id
+ where d.location_id = 1700;    
+
+-- 2) 오라클 문법
+select e.employee_id, e.first_name, d.department_name, d.location_id
+  from departments d, employees e
+ where d.department_id = e.department_id
+   and d.location_id = 1700;
+
+-- 2. department_name이 'Executive'인 부서에 근무하는 사원들의 employee_id, first_name을 조회하시오.
+-- 1) 표준 문법
+select e.employee_id, e.first_name
+  from departments d inner join employees e
+    on d.department_id = e.department_id
+ where department_name = 'Executive'; 
+
+-- 2) 오라클 문법
+select e.employee_id, e.first_name
+  from departments d, employees e
+ where d.department_id = e.department_id
+   and department_name = 'Executive';
+
+-- 3. 모든 사원들의 employee_id, first_name, department_name, city를 조회하시오.
+-- 1) 표준 문법
+select e.employee_id, e.first_name, d.department_name, l.city
+  from locations l inner join departments d
+    on l.location_id = d.location_id right outer join employees e
+    on d.department_id = e.department_id;
+  
+-- 2) 오라클 문법
+select e.employee_id, e.first_name, d.department_name, l.city
+  from locations l, departments d, employees e
+ where l.location_id = d.location_id
+   and d.department_id = e.department_id;
 
 
+-- 4. 부서별 department_name, 사원 수, 평균 연봉을 조회하시오.
+select d.department_id,d.department_name, concat(count(*),'명') 사원수 , avg(e.salary) 평균연봉
+  from departments d right outer join employees e
+    on d.department_id = e.department_id
+ group by d.department_name, d.department_id;   
+ 
+ 
+-- 5. 모든 사원들의 employee_id, first_name, department_name을 조회하시오.
+-- 1) 표준 문법
+select e.employee_id, e.first_name, d.department_name
+  from departments d right outer join employees e
+    on d.department_id = e.department_id
+ORDER BY e.employee_id;
 
+-- 2) 오라클 문법
+SELECT e.employee_id, e.first_name, d.department_name
+  FROM departments d, employees e
+ WHERE d.department_id(+) = e.department_id
+ order BY e.employee_id ;
 
-
-
-
-
-
-
-
-
-
-
+-- 6. 모든 부서의 department_name과 근무 중인 사원 수를 조회하시오. 근무하는 사원이 없으면 0으로 조회하시오.
+SELECT d.department_name, count(e.employee_id)
+  FROM departments d LEFT OUTER JOIN employees e
+    ON d.department_id = e.department_id
+ GROUP BY d.department_id, d.department_name;
+ 
 
 
 
