@@ -187,16 +187,309 @@ begin
     dbms_output.put_line('사원번호 ' || emp_id || '인 사원의 커미션은' || message || '입니다.');
 end;    
      
+/*
+    case 구문
+    
+    case
+        when 조건식 then
+            실행문
+        when 조건식 then
+            실행문
+        else
+            실행문
+    end case;       
+*/
+
+-- employee_id가 150인 사원의 phone_number에 따른 지역을 출력하시오.
+-- 011 : mobile
+-- 515 : east
+-- 590 : west
+-- 603 : south
+-- 650 : north
+
+declare
+    emp_id employees.employee_id%type;
+    phone char(3 byte);
+    message varchar2(6 byte);
+begin
+    emp_id := 150;
+    select substr(phone_number,1,3)
+      into phone
+      from employees
+     where employee_id = emp_id;
+     case
+        when phone = '011' then
+             message := 'mobile';
+        when phone = '515' then
+             message := 'east';
+        when phone = '590' then
+             message := 'west';
+        when phone = '603' then
+             message := 'south';
+        when phone = '650' then
+             message := 'north';
+      end case;
+      dbms_output.put_line(phone || ',' || message);
+end;      
 
 
+/*
+    while 문
+    
+    while 조건식 loop
+        실행문
+    end loop;
+*/
+
+-- 1 ~ 5 출력하기
+declare 
+    n number(1);
+begin
+    n := 1;
+    while n<6 loop
+    dbms_output.put_line(n);
+    n := n + 1;
+    end loop;
+end;    
+
+-- 사원번호가 100 ~ 206인 사원들의 first_name, last_name을 조회하시오.
+
+declare
+    emp_id employees.employee_id%type;
+    fname employees.first_name%type;
+    lname employees.last_name%type;
+begin
+    emp_id := 100;
+    while emp_id < 207 loop  
+      select first_name, last_name
+        into fname, lname
+        from employees
+       where employee_id = emp_id; 
+       dbms_output.put_line(fname || ' ' || lname);
+       emp_id := emp_id + 1;
+    end loop; 
+end;    
 
 
+-- 사원번호가 100 ~ 206인 사원들의 first_name, last_name을 조회하시오.
+-- 레코드 변수를 활용하시오.
+declare
+    emp_id employees.employee_id%type;
+    type full_name is record(
+        fname employees.first_name%type,
+        lname employees.last_name%type
+        );
+        
+    fn full_name;
+begin
+    emp_id := 100;
+    while emp_id < 207 loop
+        select first_name, last_name
+          into fn
+          from employees
+         where employee_id = emp_id;
+         dbms_output.put_line(fn.fname || ' ' || fn.lname);
+         emp_id := emp_id + 1;
+    end loop;
+end;    
 
 
+/*
+    for 구문
+    
+    for 변수 in 시작..종료 loop
+        실행문
+    end loop;    
+*/
+      
+-- 1 ~ 5 출력하기
+declare
+    n number(1);
+begin
+    for n in 1..5 loop
+        dbms_output.put_line(n);
+    end loop;
+end;    
+
+-- 1 ~10 사이의 정수를 '짝수', '홀수' '3의 배수'로 출력하시오.
+declare
+    n number(2);
+    modular number(1); -- 나머지 값 
+    msg varchar2(20 byte);
+begin
+    for n in 1..10 loop
+        select mod(n, 3)
+          into modular
+          from dual;
+          
+       if modular = 0 then 
+             msg := '3의 배수';
+       else 
+          select mod(n,2)
+            into modular
+            from dual;
+            
+        if modular = 1 then
+            msg := '홀수';
+        else msg := '짝수';
+        end if;
+   end if;
+   dbms_output.put_line(n || '은 ' || msg || '다.');
+   end loop;
+end;   
 
 
+-- 사원번호가 100 ~ 206인 사원들의 연봉 편균을 조회하시오.
+-- 연봉평 균 = 연봉 합 / 사원 수   
+declare 
+    emp_id employees.employee_id%type;
+    sal employees.salary%type;
+    total number;
+    cnt number;
+begin
+    total := 0;
+    cnt := 0;
+    for emp_id in 100..206 loop
+        select salary
+          into sal
+          from employees
+         where employee_id = emp_id;
+        total := total + sal;
+        cnt := cnt + 1;
+    end loop;
+    dbms_output.put_line(total/cnt);
+end;    
+    
+-- department_id가 50인 사원들의 목록을 dept50 테이블로 복사하시오.
+-- 1) dept50 테이블 만들기
+-- 2) 행 변수로 employees 테이블의 정보 읽기
+-- 3) department_id가 50이면 행 변수에 저장된 내용을 dept50 테이블로 인설트
+
+drop table dept50;
+create table dept50
+    as (select employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, commission_pct, manager_id, department_id 
+          from employees
+         where 1 = 2); 
+         
+declare
+    emp_id employees.employee_id%type;
+    emp employees%rowtype;
+begin
+    for emp_id in 100..206 loop
+        select employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, commission_pct, manager_id, department_id
+          into emp
+          from employees
+         where employee_id = emp_id;
+            if emp.department_id = 50 then 
+        insert into dept50 values emp;
+           end if;
+    end loop;
+    commit;
+end;    
+
+/*
+    exit : 반복문 종료하기
+    continue : loop문의 시작부터 다시 실행하기
+*/
+
+-- 1부터 정수 값을 누적하시오. 누적 값이 100을 초과하면 그만 누적하고 어디까지 누적했는지 조회하시오.
+declare 
+    n number;
+    total number;
+begin    
+    n := 0;
+    total := 0;
+    while true loop
+        n := n + 1;
+        
+        total := total + n;
+        if total > 100 then
+            exit;
+        end if;
+        
+    end loop;
+    dbms_output.put_line('1부터' || n || '까지 합은' || total || '입니다.');
+end;
+
+-- 1부터 '3의배수'를 제외한 정수 값을 누적하시오. 누적 값이 100을 초과하면 그만 누적하고 어디까지 누적했는지 조회하시오.
+declare 
+    n number;
+    total number;
+    modular number(1);
+begin    
+    n := 0;
+    total := 0;
+    while true loop
+        n := n + 1;
+        if total > 100 then
+            exit;
+        end if;
+        
+        select mod(n,3)
+          into modular
+          from dual;
+        if modular = 0 then
+            continue;
+        end if; 
+        
+        total := total + n;
+       
+    end loop;
+    dbms_output.put_line('1부터' || n || '까지 합은' || total || '입니다.');
+end;
+
+/*
+    예외처리 구문
+    
+    exception
+        when 예외종류 then
+            예외처리
+        when 예외종류 then
+            예외처리
+        when others then
+            예외처리
+             
+*/
+
+declare
+    fname employees.first_name%type;
+begin
+    select first_name
+      into fname
+      from employees
+     where employee_id = 0;
+exception
+    when no_data_found then
+        DBMS_OUTPUT.PUT_LINE('조회된 데이터가 없습니다.');
+end;
 
 
+declare
+    fname employees.first_name%type;
+begin
+    select first_name
+      into fname
+      from employees
+     where department_id = 50;
+exception
+    when too_many_rows then
+        dbms_output.put_line('조회된 데이터가 2개 이상입니다.');
+end;
+
+
+declare
+    fname employees.first_name%type;
+begin
+    select first_name
+      into fname
+      from employees
+     where employee_id = 0;
+exception
+    when others then
+        dbms_output.put_line(sqlcode);
+        dbms_output.put_line(sqlerrm);
+end;
+      
 
 
 
