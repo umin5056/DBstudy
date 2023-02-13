@@ -77,3 +77,126 @@ begin
      where employee_id = 100;
     dbms_output.put_line(fname || ',' || lname || ',' || sal);
 end;          
+
+-- 3. 레코드 변수
+--    여러 칼럼의 값을 동시에 저장하는 변수
+--    레코드 변수 정의(만들기)와 레코드 변수 선언으로 구분해서 진행
+
+declare
+    -- 레코드 변수 정의하기
+    type my_record_type is record( -- 타입명 : my_record_type
+        fname employees.first_name%type,
+        lname employees.last_name%type,
+        sal employees.salary%type
+    );
+    -- 레코드 변수 선언하기
+    emp my_record_type;
+begin
+    select first_name, last_name, salary
+      into emp
+      from employees
+     where employee_id = 100;
+     dbms_output.put_line(emp.fname || ',' || emp.lname || ',' || emp.sal); 
+end;     
+
+-- 4. 행 변수
+--    행 전체 데이터를 저장할 수 있는 타입
+--    항상 행 전체 데이터를 저장해야 한다.
+--    선언 방법 : 변수명 테이블명%rowtype
+declare 
+    emp employees%rowtype;
+begin 
+    select employee_id, first_name, last_name, email, phone_number, hire_date, job_id, salary, commission_pct, manager_id, department_id
+      into emp
+      from employees
+     where employee_id = 100;
+     dbms_output.put_line(emp.first_name||','||emp.last_name||','|| emp.salary);
+end;     
+
+
+/*
+    if 구문
+    if 조건식 then
+        실행문
+    elsif 조건식 then
+        실행문
+    else
+        실행문
+    end if;    
+
+*/
+
+-- 성적에 따른 학점(a,b,c,d,e,f) 출력하기
+declare
+    score number(3);
+    grade char(1 byte);
+begin
+    score := 100;
+    if score >= 90 then
+        grade := 'a';
+    elsif score >=80 then
+        grade := 'b';
+    elsif score >= 70 then
+        grade := 'c';
+    elsif score >=60 then
+        grade := 'd';
+    else   
+        grade := 'f';
+    end if;
+    dbms_output.put_line(score || '점은' || grade ||'학점입니다.');
+end;    
+
+-- employee_id가 150인 사원의 salary가 15000 이상이면 '고액연봉', 아니면 '보통연봉'을 출력하시오.
+declare 
+    emp_id employees.employee_id%type;
+    sal employees.salary%type;
+    message varchar2(20 byte);
+    
+begin 
+    emp_id := 150;
+    select salary
+      into sal
+      from employees
+     where  employee_id = emp_id;
+     if sal >= 15000 then
+     message := '고액연봉'; 
+     else 
+     message := '보통 연봉'; 
+     end if;
+     dbms_output.put_line('사원번호 ' || emp_id || '인 사원의 연봉은' || sal || '이고 ' || message || '입니다.');
+end;
+
+-- employee_id가 150인 사원의 commission_pct가 0이면 '커미션없음', 아니면 커미션(salary*commission_pct)을 출력하시오.
+declare 
+    emp_id employees.employee_id%type;
+    comm_pct employees.commission_pct%type;
+    sal employees.salary%type;
+    message varchar2(20 byte);
+    
+begin
+    emp_id := 150;
+    select nvl(commission_pct, 0), salary
+      into comm_pct, sal
+      from employees
+     where employee_id = emp_id;
+     if comm_pct = 0 then
+     message := '커미션없음';
+     else 
+     message := to_char(comm_pct * sal);
+    end if;
+    dbms_output.put_line('사원번호 ' || emp_id || '인 사원의 커미션은' || message || '입니다.');
+end;    
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
