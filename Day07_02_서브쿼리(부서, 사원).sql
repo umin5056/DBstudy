@@ -1,5 +1,5 @@
 /*
-	서브쿼리(Sub Query)
+	서브쿼리(sub query)
 	1. 메인쿼리에 포함하는 하위 쿼리를 의미한다.
 	2. 일반적으로 하위쿼리는 괄호()로 묶어서 메인쿼리에 포함한다. (괄호는 필수 아님)
 	3. 하위쿼리가 항상 메인쿼리보다 먼저 실행된다.
@@ -30,77 +30,73 @@
 
 /* where절의 서브쿼리 */
 -- 1. 사원번호가 1001인 사원과 동일한 직급(position)을 가진 사원을 조회하시오.
-SELECT emp_no, name, depart, gender, POSITION, hire_date, salary
-  FROM employee_tbl 
- WHERE POSITION = (SELECT position
- 					 FROM employee_tbl
- 					WHERE emp_no = 1001);
+select emp_no, name, depart, gender, position, hire_date, salary
+  from employee_tbl 
+ where position = (select position
+ 					 from employee_tbl
+ 					where emp_no = 1001);
  				
 -- 2. 부서번호가 2인 부서와 동일한 지역에 있는 부서를 조회하시오.
-SELECT dept_no, dept_name, location
-  FROM department_tbl
- WHERE location = (SELECT location
- 					 FROM department_tbl
- 					WHERE dept_no = 2);
+select dept_no, dept_name, location
+  from department_tbl
+ where location = (select location
+ 					 from department_tbl
+ 					where dept_no = 2);
 
 -- 3. 가장 높은 급여를 받는 사원을 조회하시오.
-SELECT emp_no, name, depart, gender, POSITION, hire_date, salary  	
-  FROM employee_tbl
- WHERE salary = (SELECT max(salary)
- 				   FROM employee_tbl);
+select emp_no, name, depart, gender, position, hire_date, salary  	
+  from employee_tbl
+ where salary = (select max(salary)
+ 				   from employee_tbl);
 
 -- 4. 평균 급여 이상을 받는 사원을 조회하시오. 
-SELECT emp_no, name, depart, gender, POSITION, hire_date, salary
-  FROM employee_tbl
- WHERE salary >= (SELECT avg(salary)
-  	 				FROM employee_tbl);
+select emp_no, name, depart, gender, position, hire_date, salary
+  from employee_tbl
+ where salary >= (select avg(salary)
+  	 				from employee_tbl);
 
 -- 5. 평균 근속 개월 수 이상을 근무한 사원을 조회하시오.
-SELECT emp_no, name, depart, gender, POSITION, hire_date, salary
-  FROM employee_tbl
- WHERE months_between(sysdate, hire_date) >= (SELECT avg(months_between(sysdate, hire_date))
- 												FROM employee_tbl);
+select emp_no, name, depart, gender, position, hire_date, salary
+  from employee_tbl
+ where months_between(sysdate, hire_date) >= (select avg(months_between(sysdate, hire_date))
+ 												from employee_tbl);
 
 -- 6. 부서 번호가 2인 부서에 근무하는 사원들의 직급과 일치하는 사원을 조회하시오.
-SELECT emp_no, name, depart, gender, POSITION, hire_date, salary
-  FROM employee_tbl
- WHERE position IN (SELECT position
-   					FROM employee_tbl
- 				   WHERE depart = 2); -- where절에 사용된 칼럼이 pk나 unique가 아니라 '=' 대신 'in'을 사용해야함	
+select emp_no, name, depart, gender, position, hire_date, salary
+  from employee_tbl
+ where position in (select position
+   					from employee_tbl
+ 				   where depart = 2); -- where절에 사용된 칼럼이 pk나 unique가 아니라 '=' 대신 'in'을 사용해야함	
  				   					  -- (결과 값이 여러개이기 때문 : '='는 1개의 값만 받을 수 있다.)
 
 -- 7. 부서명이 '영업부'인 부서에 근무하는 사원을 조회하시오.
-SELECT emp_no, name, depart, gender, POSITION, hire_date, salary
-  FROM employee_tbl
- WHERE depart in (SELECT dept_no
- 				   FROM department_tbl
- 				  WHERE dept_name = '영업부');
+select emp_no, name, depart, gender, position, hire_date, salary
+  from employee_tbl
+ where depart in (select dept_no
+ 				   from department_tbl
+ 				  where dept_name = '영업부');
 
 -- 8. 직급이 '과장'인 사원들이 근무하는 부서 정보를 조회하시오.
-SELECT dept_no, dept_name, location
-  FROM department_tbl
- WHERE dept_no IN (SELECT depart
-					 FROM employee_tbl
-					WHERE POSITION IN ('과장')); 
+select dept_no, dept_name, location
+  from department_tbl
+ where dept_no in (select depart
+					 from employee_tbl
+					where position in ('과장')); 
 
 -- 9. '영업부'에서 가장 높은 급여보다 더 높은 급여를 받는 사원을 조회하시오.
-SELECT emp_no, name, depart, gender, POSITION, hire_date, salary
-  FROM employee_tbl
- WHERE salary > (SELECT max(salary)
- 					FROM employee_tbl
- 				   WHERE depart IN (SELECT dept_no
- 				   					 FROM department_tbl
- 				   					WHERE dept_name = '영업부'));
+select emp_no, name, depart, gender, position, hire_date, salary
+  from employee_tbl
+ where salary > (select max(salary)
+ 					from employee_tbl
+ 				   where depart in (select dept_no
+ 				   					 from department_tbl
+ 				   					where dept_name = '영업부'));
 
  				   				
-/* select절의 서브쿼리 */ 
-
-SELECT
-
 
 
 /*
-   인라인 뷰(Inline View)
+   인라인 뷰(inline view)
    1. 쿼리문에 포함된 뷰(가상 테이블)이다.
    2. from절에 포한되는 서브쿼리를 의미한다.
    3. 단일 행, 다중 행 개념이 필요 없다.
@@ -119,14 +115,14 @@ SELECT
  */
 
 -- rowid
-SELECT rowid, emp_no, name
-  FROM employee_tbl;
+select rowid, emp_no, name
+  from employee_tbl;
 
 -- 오라클의 가장 빠른 검색은 rowid를 이용한 검색이다.
 -- 실무에선 사용이 불가능하기 때문에 대신 인덱스(index)를 활용. 
-SELECT emp_no, name
-  FROM employee_tbl
- WHERE rowid = 'AAATIeAAHAAAAGjAAA';
+select emp_no, name
+  from employee_tbl
+ where rowid = 'aaatieaahaaaagjaaa';
  
 /*
    rownum의 제약 사항
@@ -136,35 +132,100 @@ SELECT emp_no, name
 
 -- rownum 1번 제약사항 예시
 -- 가능
-SELECT emp_no, name
-  FROM employee_tbl
- WHERE rownum = 1;
+select emp_no, name
+  from employee_tbl
+ where rownum = 1;
 -- 가능
-SELECT emp_no, name
-  FROM employee_tbl
- WHERE rownum <= 2;
+select emp_no, name
+  from employee_tbl
+ where rownum <= 2;
 -- 불가능
-SELECT emp_no, name
-  FROM employee_tbl
- WHERE rownum = 2;
+select emp_no, name
+  from employee_tbl
+ where rownum = 2;
 
 /*
    제약 조건 2번 예시
    -- 인라인 뷰를 이용해 가장 where절보다 별명을 먼저 지정하면 된다.
    
  */
-SELECT e.emp_no, e.name, e.depart
-  FROM (SELECT emp_no, name, depart, rownum r
-  		  FROM employee_tbl) e
- WHERE e.r = 2; 		 
+select e.emp_no, e.name, e.depart
+  from (select emp_no, name, depart, rownum r
+  		  from employee_tbl) e
+ where e.r = 2; 		 
 
 
 /* from절의 서브쿼리 */
 
-SELECT e.emp_no, e.name, e.depart
-  FROM (SELECT emp_no, name, depart, rownum r
-  		  FROM employee_tbl) e
- WHERE r =2; 		 
+-- 1. 연봉이 2번째로 높은 사원을 조회하시오.
+--	  1) 연봉 순으로 정렬
+--	  2) 정렬 결과에 rownum을 붙인다.
+-- 	  3) 원하는 행 번호를 조회한다.
+
+-- 1) rownum 칼럼 사용하기
+select e.emp_no, e.name, e.depart, e.gender, e.position, e.hire_date, e.salary
+  from (select rownum as rn , a.emp_no, a.name, a.depart, a.gender, a.position, a.hire_date, a.salary
+  		  from (select emp_no, name, depart, gender, position, hire_date, salary
+  		  		  from employee_tbl
+  		  		 order by salary desc) a) e
+ where rn = 3;
+
+-- 2) row_number() 함수 사용하기
+select e.emp_no, e.name, e.depart, e.gender, e.position, e.hire_date, e.salary
+  from (select row_number() over(order by salary desc) rn , emp_no, name, depart, gender, position, hire_date, salary
+  		  from employee_tbl) e
+ where rn = 3;
+
+
+
+-- 2. 3~4번째로 입사한 사원을 조회하시오.
+-- 1) rownum 칼럼 사용하기
+select e.emp_no, e.name, e.depart, e.gender, e.position, e.hire_date, e.salary
+  from (select rownum as rn , a.emp_no, a.name, a.depart, a.gender, a.position, a.hire_date, a.salary
+  	  	  from (select emp_no, name, depart, gender, position, hire_date, salary
+  	  	  	      from employee_tbl
+  	  	  	     order by hire_date asc) a) e
+ where rn between 3 and 4;  	  	  	     
+
+-- 2) row_number() 함수 사용하기
+select e.emp_no, e.name, e.depart, e.gender, e.position, e.hire_date, e.salary
+  from (select row_number() over(order by hire_date) as rn , emp_no, name, depart, gender, position, hire_date, salary
+  	  	  from employee_tbl) e
+ where rn between 3 and 4;  	
+
+
+
+/* select절의 서브쿼리 */ 
+/*
+   스칼라 서브쿼리
+   1. select절에서 하나의 값을 반환하는 서브쿼리이다.
+   2. 일치하지 않는 정보는 null값을 반환한다.
+   3. 유사한 방식의 조인은 외부조인이다.
+ */
+
+-- 부서번호가 1인 부서와 같은 지역에서 근무하는 사원번호, 사원명, 부서명을 조회하시오.
+select 
+	   e.emp_no
+	 , e.name
+	 , e.depart
+	 , (select d.dept_name
+	 	  from department_tbl d
+	 	 where d.dept_no = e.depart
+	 	   and d.dept_no = 1)
+  from 
+  	   employee_tbl e;
+
+-- 참고. 조인으로 풀어보기
+select e.emp_no, e.name, e.depart, d.dept_name
+  from department_tbl d
+  right outer join employee_tbl e
+    on d.dept_no = e.depart
+ where d.dept_no = 1;   
+
+
+
+
+
 
 
 
