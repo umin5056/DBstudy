@@ -67,7 +67,6 @@ begin
       into sal
       from employees
      where employee_id = emp_id;
-     
      if sal >= 15000 then
         msg := '고액연봉';
      end if;   
@@ -76,16 +75,47 @@ begin
 end;     
 
 -- 사용자 함수 func3 호출
-select func3(100) 
+select employee_id, first_name, last_name, salary, func3(employee_id) 
+  from employees;
+
+
+-- 함수 my_ceil 정의
+create or replace function my_ceil(n number, digit number)
+return number
+is
+    pow number;
+begin
+    pow := power(10, digit);
+    return ceil(n * pow) / pow;
+end;
+
+-- 함수 my_ceil 호출
+select 
+       my_ceil(111.111,2)   -- 소수 2자리 올림   
+     , my_ceil(111.111,1)   -- 소수 1자리 올림
+     , my_ceil(111.111,0)   -- 정수 올림
+     , my_ceil(111.111,-1)  -- 1의자리 올림
+     , my_ceil(111.111,-2)  -- 10의자리 올림 
   from dual;
 
+-- 함수 my_floor 정의
+create or replace function my_floor(n number, digit number)
+return number
+is
+    pow number;
+begin
+    pow := power(10, digit);
+    
+    return floor(n * pow)/pow;
+end;
 
-
-
-
-
-
-
+select 
+       my_floor(123.456, 2)   -- 소수 2자리 올림   
+     , my_floor(123.456, 1)   -- 소수 1자리 올림
+     , my_floor(123.456, 0)   -- 정수 올림
+     , my_floor(123.456,-1)  -- 1의자리 올림
+     , my_floor(123.456,-2)  -- 10의자리 올림 
+  from dual;
 
 
 
