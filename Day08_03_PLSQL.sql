@@ -39,7 +39,6 @@ create table employees
 alter table employees
     add constraint pk_employee primary key(employee_id);
 
-
 /* 
     변수 선언하기
     1. 대입 연산자(:=)를 사용한다.
